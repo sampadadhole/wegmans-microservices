@@ -5,3 +5,68 @@ content-type: application/json
 
 GET http://localhost:8000/ HTTP/1.1
 content-type: application/json
+
+###
+POST http://localhost:8000/customer/signup HTTP/1.1
+content-type: application/json
+
+{
+    "name": "shubham",
+    "email": "shubhamchopade10@gmail.com",
+    "password": "shubham"
+}
+
+###
+POST http://localhost:8000/customer/signup HTTP/1.1
+content-type: application/json
+
+{
+    "name": "sampada",
+    "email": "sampadadhole4@gmail.com",
+    "password": "sampada",
+    "phone": 6802231430
+}
+
+###
+POST http://localhost:8000/customer/signup HTTP/1.1
+content-type: application/json
+
+{
+    "name": "anuja",
+    "email": "anujadhole@gmail.com",
+    "password": "anuja"
+}
+
+###
+
+POST http://localhost:8000/customer/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "sampadadhole4@gmail.com",
+    "password": "sampada"
+}
+
+###
+
+POST http://localhost:8000/customer/address/ HTTP/1.1
+content-type: application/json
+
+{
+    "AddressLine1" : "Salem",
+    "AddressLine2" : "Apt",
+    "city" : "Medford",
+    "state": "MA",
+    "country" : "USA",
+    "zipCode": "02155"
+}
+
+###
+
+GET http://localhost:8000/shopping HTTP/1.1
+content-type: application/json
+
+
+###
+GET http://localhost:8000/getproduct HTTP/1.1
+Content-Type: application/json

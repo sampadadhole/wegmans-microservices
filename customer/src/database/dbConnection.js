@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const Address = require("./schemas/Address");
 const CustomerData = require("./schemas/CustomerData");
-
+const SessionSchema = require("./schemas/Session");
 module.exports = async () => {
   try {
     await mongoose
@@ -21,5 +21,9 @@ Address.createCollection().then(function (collection) {
 });
 
 CustomerData.createCollection().then(function (collection) {
+  console.log("Collection is created!", collection.collectionName);
+});
+
+SessionSchema.createCollection().then(function (collection) {
   console.log("Collection is created!", collection.collectionName);
 });

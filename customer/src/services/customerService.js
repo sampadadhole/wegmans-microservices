@@ -25,16 +25,48 @@ class CustomerService {
   }
 
   async login(email, password) {
-    const ifExists = await this.repo.findCustomer(email);
-    if (ifExists) {
+    const customer = await this.repo.findCustomer(email);
+    if (customer) {
       const validPassword = await ValidatePassword(
         password,
-        ifExists.password,
-        ifExists.salt
+        customer.password,
+        customer.salt
       );
       console.log({ validPassword });
-      return validPassword;
+      return { customer, validPassword };
     }
+  }
+
+  async setUserSession(id, customer) {
+    return this.repo.setUserSession(id, customer);
+  }
+
+  async getUserSession(id) {
+    return this.repo.getUserSession(id);
+  }
+  async getUserSessionByUser(customer) {
+    return this.repo.getUserSessionByUser(customer);
+  }
+
+  async addAddress(
+    _id,
+    AddressLine1,
+    AddressLine2,
+    city,
+    state,
+    country,
+    zipCode
+  ) {
+    const address = await this.repo.CreateNewAddress(
+      _id,
+      AddressLine1,
+      AddressLine2,
+      city,
+      state,
+      country,
+      zipCode
+    );
+    return address;
   }
 }
 

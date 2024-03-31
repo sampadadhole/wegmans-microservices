@@ -4,7 +4,11 @@ const Schema = mongoose.Schema;
 const CustomerSchema = new Schema({
   id: String,
   name: String,
-  email: String,
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   password: String,
   salt: String,
   phone: String,
@@ -15,6 +19,10 @@ const CustomerSchema = new Schema({
       require: true,
     },
   ],
+  cart: {
+    type: Schema.Types.ObjectId,
+    ref: "product",
+  },
 });
 
 module.exports = mongoose.model("customer", CustomerSchema);
