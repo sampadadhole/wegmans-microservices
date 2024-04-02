@@ -25,11 +25,14 @@ class ProductService {
 
   async getProductById(id) {
     try {
+      console.log({ id });
       const prod = await this.repo.getProductById(id);
       return prod;
     } catch (err) {
       throw err;
     }
   }
+
+  // async getProductPayLoad()
 }
 module.exports = ProductService;

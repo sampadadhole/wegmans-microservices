@@ -34,6 +34,16 @@ class CustomerDBOperation {
     }
   }
 
+  async getCustomerProfile(id) {
+    try {
+      const customer = await CustomerDetailModel.findById(id);
+      return customer;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
   async setUserSession(id, customer) {
     try {
       const ifSessionExists = await SessionModel.findOne({
@@ -90,11 +100,53 @@ class CustomerDBOperation {
       Country: country,
       ZipCode: zipCode,
     });
+    // console.log({ _id });
     const profile = await CustomerDetailModel.findById(_id);
     const addressResult = await address.save();
     if (profile) profile.address.push(address);
 
     return await profile.save();
+  }
+
+  async AddToCart(data) {
+    try {
+      const cust_id = data.customerId;
+      const { id, name, color, quantity, price } = data;
+      console.log({ id });
+      const profile = await CustomerDetailModel.findById(cust_id).populate(
+        "cart"
+      );
+      if (profile) {
+        profile.cart.push({
+          _id: id,
+          name: name,
+          color: color,
+          quantity: quantity,
+          price: price,
+        });
+      }
+      return await profile.save();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async addToWishList(data) {
+    try {
+      const cust_id = data.customerId;
+      const { id, name, color, quantity, price } = data;
+      const profile = await CustomerDetailModel.findById(cust_id);
+      if (profile)
+        profile.wishlist.push({
+          _id: id,
+          name: name,
+          color: color,
+          quantity: quantity,
+          price: price,
+        });
+      return await profile.save();
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 module.exports = CustomerDBOperation;

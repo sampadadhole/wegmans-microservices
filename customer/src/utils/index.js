@@ -5,6 +5,7 @@ const {
   QUEUE_NAME,
   CUSTOMER_BINDING_KEY,
 } = require("../config");
+const jwt = require("jsonwebtoken");
 
 const saltRounds = 10;
 
@@ -18,6 +19,15 @@ async function GenerateHash(password, salt) {
 
 async function ValidatePassword(password, hashPassword, salt) {
   return (await GenerateHash(password, salt)) === hashPassword;
+}
+
+async function generateToken(payload) {
+  try {
+    return jwt.sign(payload, "microservices_secret", { expiresIn: "1d" });
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
 }
 
 async function createChannel() {
@@ -50,7 +60,8 @@ async function subscribeMessage(channel, service, CUSTOMER_BINDING_KEY) {
     const queue = await channel.assertQueue(QUEUE_NAME);
     channel.bindQueue(queue.queue, EXCHANGE_NAME, CUSTOMER_BINDING_KEY);
     channel.consume(queue.queue, (data) => {
-      console.log("Received:", data.content.toString());
+      // console.log("Received:", data.content.toString());
+      service.SubscribeEvents(data.content);
       channel.ack(data);
     });
   } catch (err) {
@@ -64,5 +75,6 @@ module.exports = {
   ValidatePassword,
   createChannel,
   subscribeMessage,
+  generateToken,
   // publishMessage,
 };

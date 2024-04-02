@@ -2,11 +2,8 @@ const CustomerService = require("../services/customerService");
 // const { publishMessage } = require("../utils");
 const { v4: uuidv4 } = require("uuid");
 const { CUSTOMER_BINDING_KEY } = require("../config");
-const {
-  restrictToLoggedInUserOnly,
-  verifyToken,
-} = require("./middleware/auth");
-const { subscribeMessage } = require("../utils");
+const { verifyToken } = require("./middleware/auth");
+const { subscribeMessage, generateToken } = require("../utils");
 const jwt = require("jsonwebtoken");
 
 module.exports = (app, channel) => {
@@ -18,9 +15,10 @@ module.exports = (app, channel) => {
     if (existingCustomer) {
       res.status(409).send("User already exists");
     } else {
-      const data = await service.signUp(name, email, password, phone);
-      console.log("Customer Created");
-      return res.json(data);
+      const { id, token } = await service.signUp(name, email, password, phone);
+      res.header("Authorization", token);
+
+      return res.json({ id: id, token: token });
     }
   });
 
@@ -29,27 +27,18 @@ module.exports = (app, channel) => {
     const { customer, validPassword } = await service.login(email, password);
 
     if (validPassword) {
-      // const token = jwt.sign({ id: customer.id }, "microservices_secret", {
-      //   expiresIn: "30days",
-      // });
-      // console.log({ token });
-      // console.log(id);
-      // console.log(customer.id);
-      const ifSessionExists = await service.getUserSessionByUser(customer);
-      console.log(ifSessionExists);
-      if (!ifSessionExists) {
-        const sessionId = uuidv4();
-        await service.setUserSession(sessionId, customer);
-        res.cookie("uid", sessionId);
-      }
-
-      return res.status(200).send("User Logged In");
+      return res.status(200).json(customer);
     } else return res.status(404).send("User not found");
   });
 
-  app.post("/address", restrictToLoggedInUserOnly, async (req, res, next) => {
-    const { _id } = req.user.customer;
-    const { AddressLine1, AddressLine2, city, state, country, zipCode } =
+  app.get("/profile/:id", async (req, res, next) => {
+    const id = req.params.id;
+    const data = await service.getCustomerProfile(id);
+    return res.status(200).json(data);
+  });
+
+  app.post("/address", verifyToken, async (req, res, next) => {
+    const { _id, AddressLine1, AddressLine2, city, state, country, zipCode } =
       req.body;
     const data = await service.addAddress(_id, {
       AddressLine1,
@@ -60,6 +49,6 @@ module.exports = (app, channel) => {
       zipCode,
     });
 
-    return res.json(data);
+    return res.status(200).json(data);
   });
 };

@@ -28,12 +28,11 @@ async function createChannel() {
   }
 }
 
-async function publishMessage(channel, service, message) {
+async function publishMessage(channel, binding_key, message) {
   try {
-    console.log({ channel });
     await channel.publish(
       EXCHANGE_NAME,
-      service,
+      binding_key,
       Buffer.from(JSON.stringify(message))
     );
     console.log("Sent:", message);

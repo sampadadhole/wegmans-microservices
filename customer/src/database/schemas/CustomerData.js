@@ -19,10 +19,26 @@ const CustomerSchema = new Schema({
       require: true,
     },
   ],
-  cart: {
-    type: Schema.Types.ObjectId,
-    ref: "product",
-  },
+  cart: [
+    {
+      product: {
+        _id: String,
+        name: String,
+        color: String,
+        quantity: Number,
+      },
+    },
+  ],
+  wishlist: [
+    {
+      product: {
+        _id: String,
+        name: String,
+        color: String,
+        quantity: Number,
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model("customer", CustomerSchema);
